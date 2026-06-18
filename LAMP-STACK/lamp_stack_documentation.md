@@ -24,5 +24,3 @@ The LAMP stack is a popular open-source web development platform that consists o
 4. The default VPC and Subnet was used for network configurations
 
 ![1781671867179](image/lamp_stack_documentation/1781671867179.png)
-
-5. The
