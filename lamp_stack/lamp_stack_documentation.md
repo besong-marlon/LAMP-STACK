@@ -4,7 +4,7 @@
 
 The LAMP stack is a popular open-source web development platform that consist of four main components: Linux, Apache, MySQL and PHP (Perl or Python). This documentation outlines the setup, configuration, and usage of the LAMP stack.
 
-### ++Step 0 - Preparing prerequisites++
+### Step 0 - Preparing prerequisites
 
 **1- Created an EC2 instance of t3.micro type which happens to be a free tier and Ubuntu 24.04 LTS (HVM) and was launched in us-east1 AWS region.**
 
