@@ -252,8 +252,110 @@ sudo a2dissite 000-default
 
 **6- Ensure the configuration does not contain syntax error**
 
-**The command below was used:**
+The command below was used:
 
 ```bash
 sudo apache2ctl configtest
 ```
+
+![EnsuringConfig_hasNoSyntaxError](./images/EnsuringConfig_hasNoSyntaxError.png)
+
+**7- Reaload apache for changes to take effect**
+
+```bash
+sudo systemctl reload apache2
+```
+
+![reloadingApacheSystem](./images/reloadingApacheSystem.png)
+
+**8- new website is now active, but the web root /var/www/projectlamp is still empty. Create an index.html file in that location so that we can test that the virtual host works as expected:**
+
+```bash
+sudo echo 'Hello LAMP from hostname' $(TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` && curl -H "X-aws-ec2-metadata-token: $TOKEN" -s http://169.254.169.254/latest/meta-data/public-hostname) 'with public IP' $(TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` && curl -H "X-aws-ec2-metadata-token: $TOKEN" -s http://169.254.169.254/latest/meta-data/public-ipv4) > /var/www/projectlamp/index.html
+```
+
+![creating_an_index_file_to_test_theVirtualHost](./images/creating_an_index_file_to_test_theVirtualHost.png)
+
+**9- Open the website on a browser using the public IPddress.**
+
+```bash
+http://107.23.19.175:80
+```
+
+![websiteOn_A_Browser](./images/websiteOn_A_Browser.png)
+
+**10- Open the wesite with the public dns name (port is optional)**
+
+```bash
+http://<public-DNS-name>:80
+```
+
+![websiteOpendUsing_publicDNS](./images/websiteOpendUsing_publicDNS.png)
+
+This file can be left in place as a temporary landing page for the application until an index.php file is set up to replace it. Once this is done, the index.html file should be renamed or removed from the document root as it will take precedence over index.php file by default.
+
+### ++Step 5 - Enabling PHP on the wesite++
+
+With the default **DirectoryIndex** settings on Apache, a file named index.html will always take precedence over an index.php file. This is useful for setting up maintenance pages in PHP applications, by creating a temporary index.html file containing an informative message to visitors. Because this page will take precedence over the index.php page, it will then become the landing page for the application. Once maintenance is over, the index.html is renamed or removed from the document root, bringing back the regular application page.
+
+**1- Open the dir.conf filw with vim to change the bahaviour**
+
+```bash
+sudo vim /etc/apache2/mods-enabled/dir.conf
+```
+
+```bash
+<IfModule mod_dir.c>
+        #Change this:
+        #DirectoryIndex index.html index.cgi index.pl index.php index.xhtml index.htm
+        #To this:
+        DirectoryIndex index.php index.html index.cgi index.pl index.xhtml index.htm
+</IfModule>
+```
+
+![changing_dir.conf_behaviour](./images/changing_dir-conf_behaviour-2.png)![changed_dir.conf](./images/changed_dir-conf.png)
+
+**2- Reload Apache**
+
+After saving and closing the file, you will need to reload Apache so the changes take effect:
+
+```bash
+sudo systemctl reload apache2
+```
+
+![Apache2_reloaded](./images/Apache2_reloaded.png)
+
+**3- Create a php test script to confirm that Apache is able to handle and process requests for PHP files.**
+
+A new index.php file was created inside the customb root folder.
+
+```bash
+vim /var/www/projectlamp/index.php
+```
+
+Add the text below in the index.php file
+
+```bash
+<?php
+phpinfo();
+```
+
+![addedText_intoPHP_file](./images/addedText_intoPHP_file.png)
+
+**4- Now refresh the public IP page**
+
+![refreshed_IP_Page](./images/refreshed_IP_Page.png)
+
+This page provides information about your server from the perspective of PHP. It is useful for debugging and to ensure that your settings are being applied correctly.
+
+If you can see this page in your browser, then your PHP installation is working as expected.
+
+After checking the relevant information about your PHP server through that page, it’s best to remove the file you created as it contains sensitive information about your PHP environment -and your Ubuntu server. You can use rm to do so:
+
+```bash
+sudo rm /var/www/projectlamp/index.php
+```
+
+### Conclusion:
+
+The LAMP stack provides a robust and flexible platform for developing and deploying web applications. By following the guidelines outlined in this documentation, It was possible to set up, configure, and maintain a LAMP environment effectively, enabling the creation of powerful and scalable web solutions.
